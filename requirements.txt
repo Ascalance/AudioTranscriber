@@ -1,0 +1,6 @@
+sounddevice
+numpy
+wave
+whisper
+pydub
+tkinter
