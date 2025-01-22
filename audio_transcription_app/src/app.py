@@ -8,7 +8,7 @@ import datetime
 os.makedirs("Logs", exist_ok=True)
 os.makedirs("Records/Audio", exist_ok=True)
 os.makedirs("Records/Transcription", exist_ok=True)
-os.makedirs("temp", exist_ok=True)
+os.makedirs("Temp", exist_ok=True)
 
 log_dir = "Logs"
 logging.basicConfig(filename=os.path.join(log_dir, 'log.txt'), level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
