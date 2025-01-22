@@ -4,8 +4,13 @@ import logging
 import os
 import datetime
 
+# Create necessary directories if they don't exist
+os.makedirs("Logs", exist_ok=True)
+os.makedirs("Records/Audio", exist_ok=True)
+os.makedirs("Records/Transcription", exist_ok=True)
+os.makedirs("temp", exist_ok=True)
+
 log_dir = "Logs"
-os.makedirs(log_dir, exist_ok=True)
 logging.basicConfig(filename=os.path.join(log_dir, 'log.txt'), level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class AppUI(QtWidgets.QMainWindow):
