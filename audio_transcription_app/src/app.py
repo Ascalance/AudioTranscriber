@@ -2,12 +2,17 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from audio_recorder import AudioRecorder
 import logging
 import os
+import shutil
 import datetime
 
 # Create necessary directories if they don't exist
 os.makedirs("Logs", exist_ok=True)
 os.makedirs("Records/Audio", exist_ok=True)
 os.makedirs("Records/Transcription", exist_ok=True)
+os.makedirs("Temp", exist_ok=True)
+
+# Clear the Temp directory at startup
+shutil.rmtree("Temp")
 os.makedirs("Temp", exist_ok=True)
 
 log_dir = "Logs"
@@ -19,6 +24,8 @@ class AppUI(QtWidgets.QMainWindow):
         self.initUI()
         self.imported_file_path = None
         self.temp_audio_file_path = None
+        self.last_recorded_file_path = None
+        self.is_recording = False
 
     def initUI(self):
         self.setWindowTitle("AudioTranscriber")
@@ -97,6 +104,16 @@ class AppUI(QtWidgets.QMainWindow):
         self.transcription_button.clicked.connect(self.start_transcription)
         layout.addWidget(self.transcription_button)
 
+        self.file_choice_label = QtWidgets.QLabel("Choose File to Transcribe:")
+        self.file_choice_label.setFont(QtGui.QFont("Arial", 12))
+        layout.addWidget(self.file_choice_label)
+
+        self.file_choice_combo = QtWidgets.QComboBox()
+        self.file_choice_combo.setFont(QtGui.QFont("Arial", 12))
+        self.file_choice_combo.addItem("Last Recorded", "last_recorded")
+        self.file_choice_combo.addItem("Imported", "imported")
+        layout.addWidget(self.file_choice_combo)
+
         self.status_label = QtWidgets.QLabel("Status: Ready")
         self.status_label.setFont(QtGui.QFont("Arial", 16, QtGui.QFont.Bold))
         self.status_label.setStyleSheet("color: blue;")
@@ -133,36 +150,58 @@ class AppUI(QtWidgets.QMainWindow):
         self.recorder.start_recording()
         self.record_button.setEnabled(False)
         self.stop_button.setEnabled(True)
+        self.transcription_button.setEnabled(False)
+        self.is_recording = True
         self.status_label.setText("Status: Recording...")
         self.status_label.setStyleSheet("color: red;")
 
     def stop_recording(self):
         self.recorder.stop_recording()
-        self.temp_audio_file_path = os.path.join("temp", "enregistrement.wav")
+        self.temp_audio_file_path = os.path.join("temp", "record.wav")
         self.recorder.save_recording(self.temp_audio_file_path)
         self.status_label.setText("Status: Recording completed")
         self.status_label.setStyleSheet("color: orange;")
         self.stop_button.setEnabled(False)
+        self.record_button.setEnabled(True)
+        self.transcription_button.setEnabled(True)
+        self.is_recording = False
+        if not self.delete_temp_audio_checkbox.isChecked():
+            audio_save_path = os.path.join("Records", "Audio", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".wav")
+            shutil.move(self.temp_audio_file_path, audio_save_path)
+            self.temp_audio_file_path = audio_save_path
+        self.last_recorded_file_path = self.temp_audio_file_path
 
     def start_transcription(self):
+        if self.is_recording:
+            self.status_label.setText("Status: Cannot transcribe while recording")
+            self.status_label.setStyleSheet("color: red;")
+            return
         save_path = self.save_path_entry.text()
-        if not os.path.isabs(save_path):
-            save_path = os.path.join("Records", "Transcription", save_path)
-        if not save_path.endswith(".txt"):
-            save_path += ".txt"
+        if save_path:
+            if not os.path.isabs(save_path):
+                save_path = os.path.join("Records", "Transcription", save_path)
+            if not save_path.endswith(".txt"):
+                save_path += ".txt"
+        else:
+            save_path = os.path.join("Records", "Transcription", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".txt")
         language = self.language_combo.currentData()
         model = self.model_combo.currentData()
         delete_temp_audio = self.delete_temp_audio_checkbox.isChecked()
         self.status_label.setText("Status: Transcribing...")
         self.status_label.setStyleSheet("color: purple;")
-        if self.imported_file_path:
+        file_choice = self.file_choice_combo.currentData()
+        if file_choice == "imported" and self.imported_file_path:
             self.recorder.transcribe_audio_from_file(self.imported_file_path, save_path, language, model, delete_after_transcription=False)
             self.imported_file_path = None
-        elif self.temp_audio_file_path:
-            self.recorder.transcribe_audio_from_file(self.temp_audio_file_path, save_path, language, model, delete_after_transcription=delete_temp_audio)
-            self.temp_audio_file_path = None
+        elif file_choice == "last_recorded" and self.last_recorded_file_path:
+            self.recorder.transcribe_audio_from_file(self.last_recorded_file_path, save_path, language, model, delete_after_transcription=delete_temp_audio)
+            if delete_temp_audio:
+                os.remove(self.last_recorded_file_path)
+            self.last_recorded_file_path = None
         else:
-            self.recorder.transcribe_audio(save_path, language, model, delete_temp_audio)
+            self.status_label.setText("Status: No file selected for transcription")
+            self.status_label.setStyleSheet("color: red;")
+            return
         self.status_label.setText("Status: Transcription completed")
         self.status_label.setStyleSheet("color: green;")
         QtCore.QTimer.singleShot(2000, self.reset_status)
@@ -183,6 +222,12 @@ class AppUI(QtWidgets.QMainWindow):
     def resizeEvent(self, event):
         self.size_label.setText(f"Window Size: {self.width()} x {self.height()}")
         super().resizeEvent(event)
+
+    def closeEvent(self, event):
+        # Clear the Temp directory at shutdown
+        shutil.rmtree("Temp")
+        os.makedirs("Temp", exist_ok=True)
+        event.accept()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])

@@ -58,7 +58,7 @@ class AudioRecorder:
     def transcribe_audio(self, save_path, language, model, delete_after_transcription):
         temp_dir = "temp"
         os.makedirs(temp_dir, exist_ok=True)
-        audio_file = os.path.join(temp_dir, "enregistrement.wav")
+        audio_file = os.path.join(temp_dir, "record.wav")
         self.save_recording(audio_file)
         self.transcribe_audio_from_file(audio_file, save_path, language, model, delete_after_transcription)
 
