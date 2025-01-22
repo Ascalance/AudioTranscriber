@@ -375,3 +375,22 @@
 2025-01-22 13:56:18,391 - INFO - Transcription completed in 40.55 seconds
 2025-01-22 13:56:18,400 - INFO - Transcription saved to Records\Transcription\transcription.txt
 2025-01-22 13:56:18,404 - INFO - Temporary audio file deleted.
+2025-01-22 13:57:02,371 - INFO - 
+--- Nouvelle session ---
+2025-01-22 14:21:29,057 - INFO - Transcription completed in 1438.89 seconds
+2025-01-22 14:21:29,066 - INFO - Transcription saved to Records\Transcription\transcription(1).txt
+2025-01-22 14:21:29,066 - INFO - Imported audio file not deleted.
+2025-01-22 14:39:41,695 - INFO - Starting recording...
+2025-01-22 14:39:41,695 - INFO - Starting recording...
+2025-01-22 14:39:46,476 - INFO - Recording completed in 4.78 seconds
+2025-01-22 14:39:46,481 - INFO - Recording saved to temp\enregistrement.wav
+2025-01-22 14:41:12,070 - INFO - Transcription completed in 70.35 seconds
+2025-01-22 14:41:12,073 - INFO - Transcription saved to Records\Transcription\transcription(2).txt
+2025-01-22 14:41:12,073 - INFO - Temporary audio file deleted.
+2025-01-22 14:57:04,167 - INFO - Starting recording...
+2025-01-22 14:57:04,167 - INFO - Starting recording...
+2025-01-22 15:05:12,113 - INFO - Recording completed in 487.95 seconds
+2025-01-22 15:05:12,389 - INFO - Recording saved to temp\enregistrement.wav
+2025-01-22 15:16:15,513 - INFO - Transcription completed in 636.54 seconds
+2025-01-22 15:16:15,550 - INFO - Transcription saved to Records\Transcription\transcription(3).txt
+2025-01-22 15:16:15,567 - INFO - Temporary audio file deleted.

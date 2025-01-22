@@ -1,0 +1,11 @@
+# Exclude contents of Records/Audio
+Records/Audio/*
+
+# Exclude contents of Records/Transcription
+Records/Transcription/*
+
+# Exclude contents of Temp
+Temp/*
+
+# Exclude contents of Logs
+Logs/*
