@@ -1,43 +1,73 @@
-# Audio Transcription App
+# AudioTranscriber
 
-Cette application permet d'enregistrer de l'audio et de le transcrire en texte en utilisant Whisper. L'interface utilisateur est construite avec Tkinter et offre des fonctionnalités pour démarrer et arrêter l'enregistrement, choisir la langue de transcription, et spécifier l'emplacement de sauvegarde du fichier audio.
+AudioTranscriber is an application for recording and transcribing audio files. It supports multiple languages and allows you to choose the Whisper model for transcription.
 
-## Prérequis
+## Features
+- Transcribe audio files to text
+- Support for multiple audio formats (mp3, wav, etc.)
+- Real-time transcription
+- Language detection
+- Speaker identification
+- Export transcriptions to various formats (txt, docx, pdf)
 
-Avant de commencer, assurez-vous d'avoir installé les dépendances nécessaires. Vous pouvez les installer en utilisant le fichier `requirements.txt`.
+## Requirements
+- Python 3.6+
+- sounddevice
+- numpy
+- wave
+- whisper
+- pydub
+- pyinstaller
+- PyQt5
 
 ## Installation
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/IA91/AudioTranscriber.git
+    cd AudioTranscriber
+    ```
+2. Install the required Python packages:
+    ```sh
+    pip install -r requirements.txt
+    ```
+3. Install ffmpeg:
+    - **Windows**: Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH
+    - **macOS**: Install via Homebrew
+        ```sh
+        brew install ffmpeg
+        ```
+    - **Linux**: Install via package manager
+        ```sh
+        sudo apt-get install ffmpeg
+        ```
 
-1. Clonez le dépôt :
-   ```
-   git clone <URL_DU_DEPOT>
-   cd audio_transcription_app
-   ```
+## Usage
+1. Run the application:
+    ```sh
+    python main.py
+    ```
+2. Follow the on-screen instructions to upload an audio file and start transcription.
 
-2. Installez les dépendances :
-   ```
-   pip install -r requirements.txt
-   ```
+## Building for All Platforms
+- **Windows**:
+    ```sh
+    pyinstaller --onefile main.py
+    ```
+- **macOS**:
+    ```sh
+    pyinstaller --onefile main.py
+    ```
+- **Linux**:
+    ```sh
+    pyinstaller --onefile main.py
+    ```
 
-## Utilisation
+## Contributing
+Contributions are welcome! Please fork the repository and create a pull request with your changes.
 
-Pour exécuter l'application, utilisez la commande suivante :
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-```
-python src/app.py
-```
-
-## Fonctionnalités
-
-- Enregistrement audio avec des boutons pour démarrer et arrêter l'enregistrement.
-- Sélection de la langue pour la transcription (Français ou Anglais).
-- Champ de saisie pour spécifier l'emplacement de sauvegarde du fichier audio.
-- Suppression automatique du fichier audio après transcription.
-
-## Contribuer
-
-Les contributions sont les bienvenues ! N'hésitez pas à soumettre des demandes de tirage pour améliorer l'application.
-
-## Licence
-
-Ce projet est sous licence MIT. Veuillez consulter le fichier LICENSE pour plus de détails.
+## Credits
+Author: Baptiste Lusseau
+GitHub: Ascalance

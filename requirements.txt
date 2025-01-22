@@ -3,4 +3,5 @@ numpy
 wave
 whisper
 pydub
-tkinter
+pyinstaller
+PyQt5

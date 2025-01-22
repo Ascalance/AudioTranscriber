@@ -1,7 +1,8 @@
-from ui import AppUI
-import tkinter as tk
+from PyQt5 import QtWidgets
+from app import AppUI
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = AppUI(root)
-    root.mainloop()
+    app = QtWidgets.QApplication([])
+    window = AppUI()
+    window.show()
+    app.exec_()
