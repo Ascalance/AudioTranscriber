@@ -37,95 +37,64 @@ class AppUI(QtWidgets.QMainWindow):
 
         self.recorder = AudioRecorder()
 
-        self.record_button = QtWidgets.QPushButton("Start Recording")
-        self.record_button.setFont(QtGui.QFont("Arial", 12))
-        self.record_button.clicked.connect(self.start_recording)
-        layout.addWidget(self.record_button)
+        self.record_button = self.create_button("Start Recording", self.start_recording, layout)
+        self.stop_button = self.create_button("Stop Recording", self.stop_recording, layout, enabled=False)
+        self.import_button = self.create_button("Import Audio", self.import_audio, layout)
 
-        self.stop_button = QtWidgets.QPushButton("Stop Recording")
-        self.stop_button.setFont(QtGui.QFont("Arial", 12))
-        self.stop_button.clicked.connect(self.stop_recording)
-        self.stop_button.setEnabled(False)
-        layout.addWidget(self.stop_button)
+        self.language_label = self.create_label("Choose Language:", layout)
+        self.language_combo = self.create_combo_box(["Detect Language Automatically", "French", "English", "Spanish", "German", "Chinese", "Japanese", "Russian", "Portuguese", "Italian", "Korean"], layout)
 
-        self.import_button = QtWidgets.QPushButton("Import Audio")
-        self.import_button.setFont(QtGui.QFont("Arial", 12))
-        self.import_button.clicked.connect(self.import_audio)
-        layout.addWidget(self.import_button)
+        self.model_label = self.create_label("Choose Whisper Model:", layout)
+        self.model_combo = self.create_combo_box(["Turbo", "Tiny", "Base", "Small", "Medium", "Large"], layout, default="Turbo")
 
-        self.language_label = QtWidgets.QLabel("Choose Language:")
-        self.language_label.setFont(QtGui.QFont("Arial", 12))
-        layout.addWidget(self.language_label)
+        self.file_choice_label = self.create_label("Choose File to Transcribe:", layout)
+        self.file_choice_combo = self.create_combo_box(["Last Recorded", "Imported"], layout)
 
-        self.language_combo = QtWidgets.QComboBox()
-        self.language_combo.setFont(QtGui.QFont("Arial", 12))
-        self.language_combo.addItem("Detect Language Automatically", None)
-        self.language_combo.addItem("French", "fr")
-        self.language_combo.addItem("English", "en")
-        self.language_combo.addItem("Spanish", "es")
-        self.language_combo.addItem("German", "de")
-        self.language_combo.addItem("Chinese", "zh")
-        self.language_combo.addItem("Japanese", "ja")
-        self.language_combo.addItem("Russian", "ru")
-        self.language_combo.addItem("Portuguese", "pt")
-        self.language_combo.addItem("Italian", "it")
-        self.language_combo.addItem("Korean", "ko")
-        layout.addWidget(self.language_combo)
+        self.delete_temp_audio_checkbox = self.create_check_box("Delete temporary audio after transcription", layout, checked=True)
 
-        self.model_label = QtWidgets.QLabel("Choose Whisper Model:")
-        self.model_label.setFont(QtGui.QFont("Arial", 12))
-        layout.addWidget(self.model_label)
+        self.transcription_button = self.create_button("Start Transcription", self.start_transcription, layout)
 
-        self.model_combo = QtWidgets.QComboBox()
-        self.model_combo.setFont(QtGui.QFont("Arial", 12))
-        self.model_combo.addItem("Turbo", "turbo")
-        self.model_combo.addItem("Tiny", "tiny")
-        self.model_combo.addItem("Base", "base")
-        self.model_combo.addItem("Small", "small")
-        self.model_combo.addItem("Medium", "medium")
-        self.model_combo.addItem("Large", "large")
-        self.model_combo.setCurrentText("Turbo")
-        layout.addWidget(self.model_combo)
+        self.status_label = self.create_label("Status: Ready", layout, font_size=16, bold=True, color="blue", alignment=QtCore.Qt.AlignCenter)
 
-        self.save_path_label = QtWidgets.QLabel("Transcription Save Path:")
-        self.save_path_label.setFont(QtGui.QFont("Arial", 12))
-        layout.addWidget(self.save_path_label)
-
-        self.save_path_entry = QtWidgets.QLineEdit()
-        self.save_path_entry.setFont(QtGui.QFont("Arial", 12))
-        layout.addWidget(self.save_path_entry)
-
-        self.delete_temp_audio_checkbox = QtWidgets.QCheckBox("Delete temporary audio after transcription")
-        self.delete_temp_audio_checkbox.setChecked(True)
-        layout.addWidget(self.delete_temp_audio_checkbox)
-
-        self.transcription_button = QtWidgets.QPushButton("Start Transcription")
-        self.transcription_button.setFont(QtGui.QFont("Arial", 12))
-        self.transcription_button.clicked.connect(self.start_transcription)
-        layout.addWidget(self.transcription_button)
-
-        self.file_choice_label = QtWidgets.QLabel("Choose File to Transcribe:")
-        self.file_choice_label.setFont(QtGui.QFont("Arial", 12))
-        layout.addWidget(self.file_choice_label)
-
-        self.file_choice_combo = QtWidgets.QComboBox()
-        self.file_choice_combo.setFont(QtGui.QFont("Arial", 12))
-        self.file_choice_combo.addItem("Last Recorded", "last_recorded")
-        self.file_choice_combo.addItem("Imported", "imported")
-        layout.addWidget(self.file_choice_combo)
-
-        self.status_label = QtWidgets.QLabel("Status: Ready")
-        self.status_label.setFont(QtGui.QFont("Arial", 16, QtGui.QFont.Bold))
-        self.status_label.setStyleSheet("color: blue;")
-        self.status_label.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(self.status_label)
-
-        self.size_label = QtWidgets.QLabel(f"Window Size: {self.width()} x {self.height()}")
-        self.size_label.setFont(QtGui.QFont("Arial", 12))
-        self.size_label.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(self.size_label)
+        self.size_label = self.create_label(f"Window Size: {self.width()} x {self.height()}", layout, alignment=QtCore.Qt.AlignCenter)
 
         self.create_menu()
+
+    def create_button(self, text, callback, layout, enabled=True):
+        button = QtWidgets.QPushButton(text)
+        button.setFont(QtGui.QFont("Arial", 12))
+        button.clicked.connect(callback)
+        button.setEnabled(enabled)
+        layout.addWidget(button)
+        return button
+
+    def create_label(self, text, layout, font_size=12, bold=False, color="black", alignment=None):
+        label = QtWidgets.QLabel(text)
+        font = QtGui.QFont("Arial", font_size)
+        if bold:
+            font.setBold(True)
+        label.setFont(font)
+        label.setStyleSheet(f"color: {color};")
+        if alignment:
+            label.setAlignment(alignment)
+        layout.addWidget(label)
+        return label
+
+    def create_combo_box(self, items, layout, default=None):
+        combo_box = QtWidgets.QComboBox()
+        combo_box.setFont(QtGui.QFont("Arial", 12))
+        for item in items:
+            combo_box.addItem(item)
+        if default:
+            combo_box.setCurrentText(default)
+        layout.addWidget(combo_box)
+        return combo_box
+
+    def create_check_box(self, text, layout, checked=False):
+        check_box = QtWidgets.QCheckBox(text)
+        check_box.setChecked(checked)
+        layout.addWidget(check_box)
+        return check_box
 
     def create_menu(self):
         menubar = self.menuBar()
@@ -152,15 +121,13 @@ class AppUI(QtWidgets.QMainWindow):
         self.stop_button.setEnabled(True)
         self.transcription_button.setEnabled(False)
         self.is_recording = True
-        self.status_label.setText("Status: Recording...")
-        self.status_label.setStyleSheet("color: red;")
+        self.update_status("Status: Recording...", "red")
 
     def stop_recording(self):
         self.recorder.stop_recording()
         self.temp_audio_file_path = os.path.join("temp", "record.wav")
         self.recorder.save_recording(self.temp_audio_file_path)
-        self.status_label.setText("Status: Recording completed")
-        self.status_label.setStyleSheet("color: orange;")
+        self.update_status("Status: Recording completed", "orange")
         self.stop_button.setEnabled(False)
         self.record_button.setEnabled(True)
         self.transcription_button.setEnabled(True)
@@ -173,42 +140,37 @@ class AppUI(QtWidgets.QMainWindow):
 
     def start_transcription(self):
         if self.is_recording:
-            self.status_label.setText("Status: Cannot transcribe while recording")
-            self.status_label.setStyleSheet("color: red;")
+            self.update_status("Status: Cannot transcribe while recording", "red")
             return
-        save_path = self.save_path_entry.text()
-        if save_path:
-            if not os.path.isabs(save_path):
-                save_path = os.path.join("Records", "Transcription", save_path)
-            if not save_path.endswith(".txt"):
-                save_path += ".txt"
-        else:
-            save_path = os.path.join("Records", "Transcription", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".txt")
-        language = self.language_combo.currentData()
-        model = self.model_combo.currentData()
+        save_path = os.path.join("Records", "Transcription", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".txt")
+        language = self.language_combo.currentText()
+        if language == "Detect Language Automatically":
+            language = None
+        model = self.model_combo.currentText()
+        logging.info(f"Using model: {model}")
         delete_temp_audio = self.delete_temp_audio_checkbox.isChecked()
-        self.status_label.setText("Status: Transcribing...")
-        self.status_label.setStyleSheet("color: purple;")
-        file_choice = self.file_choice_combo.currentData()
-        if file_choice == "imported" and self.imported_file_path:
+        self.update_status("Status: Transcribing...", "purple")
+        file_choice = self.file_choice_combo.currentText()
+        if file_choice == "Imported" and self.imported_file_path:
             self.recorder.transcribe_audio_from_file(self.imported_file_path, save_path, language, model, delete_after_transcription=False)
             self.imported_file_path = None
-        elif file_choice == "last_recorded" and self.last_recorded_file_path:
+        elif file_choice == "Last Recorded" and self.last_recorded_file_path:
             self.recorder.transcribe_audio_from_file(self.last_recorded_file_path, save_path, language, model, delete_after_transcription=delete_temp_audio)
-            if delete_temp_audio:
+            if delete_temp_audio and os.path.exists(self.last_recorded_file_path):
                 os.remove(self.last_recorded_file_path)
             self.last_recorded_file_path = None
         else:
-            self.status_label.setText("Status: No file selected for transcription")
-            self.status_label.setStyleSheet("color: red;")
+            self.update_status("Status: No file selected for transcription", "red")
             return
-        self.status_label.setText("Status: Transcription completed")
-        self.status_label.setStyleSheet("color: green;")
+        self.update_status("Status: Transcription completed", "green")
         QtCore.QTimer.singleShot(2000, self.reset_status)
 
+    def update_status(self, text, color):
+        self.status_label.setText(text)
+        self.status_label.setStyleSheet(f"color: {color};")
+
     def reset_status(self):
-        self.status_label.setText("Status: Ready")
-        self.status_label.setStyleSheet("color: blue;")
+        self.update_status("Status: Ready", "blue")
         self.record_button.setEnabled(True)
 
     def import_audio(self):
@@ -216,8 +178,8 @@ class AppUI(QtWidgets.QMainWindow):
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Import Audio File", "", "Audio Files (*.wav *.mp3 *.flac *.m4a *.aac *.ogg *.wma);;All Files (*)", options=options)
         if file_path:
             self.imported_file_path = file_path
-            self.status_label.setText("Status: Audio imported")
-            self.status_label.setStyleSheet("color: orange;")
+            self.last_recorded_file_path = file_path
+            self.update_status("Status: Audio imported", "orange")
 
     def resizeEvent(self, event):
         self.size_label.setText(f"Window Size: {self.width()} x {self.height()}")

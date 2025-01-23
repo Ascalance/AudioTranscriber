@@ -67,7 +67,17 @@ class AudioRecorder:
             logging.error("Audio file not found.")
             return
 
-        model = whisper.load_model(model)
+        model_mapping = {
+            "Turbo": "turbo",
+            "Tiny": "tiny",
+            "Base": "base",
+            "Small": "small",
+            "Medium": "medium",
+            "Large": "large-v3-turbo"
+        }
+
+        model_name = model_mapping.get(model, model)
+        model = whisper.load_model(model_name)
         transcription_start_time = time.time()
         try:
             result = model.transcribe(file_path, language=language)

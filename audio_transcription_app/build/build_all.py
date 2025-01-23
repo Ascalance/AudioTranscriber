@@ -1,6 +1,5 @@
 import os
 import subprocess
-import platform
 
 def build_windows():
     print("Building AudioTranscriber for Windows...")
