@@ -1,22 +1,20 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from audio_recorder import AudioRecorder
+from transcriber import Transcriber
 import logging
 import os
 import shutil
 import datetime
 
-# Create necessary directories if they don't exist
 os.makedirs("Logs", exist_ok=True)
 os.makedirs("Records/Audio", exist_ok=True)
 os.makedirs("Records/Transcription", exist_ok=True)
 os.makedirs("Temp", exist_ok=True)
 
-# Clear the Temp directory at startup
 shutil.rmtree("Temp")
 os.makedirs("Temp", exist_ok=True)
 
-log_dir = "Logs"
-logging.basicConfig(filename=os.path.join(log_dir, 'log.txt'), level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename=os.path.join("Logs", 'log.txt'), level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class AppUI(QtWidgets.QMainWindow):
     def __init__(self):
@@ -26,6 +24,7 @@ class AppUI(QtWidgets.QMainWindow):
         self.temp_audio_file_path = None
         self.last_recorded_file_path = None
         self.is_recording = False
+        self.transcriber = Transcriber()
 
     def initUI(self):
         self.setWindowTitle("AudioTranscriber")
@@ -50,7 +49,7 @@ class AppUI(QtWidgets.QMainWindow):
         self.file_choice_label = self.create_label("Choose File to Transcribe:", layout)
         self.file_choice_combo = self.create_combo_box(["Last Recorded", "Imported"], layout)
 
-        self.delete_temp_audio_checkbox = self.create_check_box("Delete temporary audio after transcription", layout, checked=True)
+        self.delete_temp_audio_checkbox = self.create_check_box("Temporary audio (will be deleted after transcription)", layout, checked=True)
 
         self.transcription_button = self.create_button("Start Transcription", self.start_transcription, layout)
 
@@ -152,17 +151,18 @@ class AppUI(QtWidgets.QMainWindow):
         self.update_status("Status: Transcribing...", "purple")
         file_choice = self.file_choice_combo.currentText()
         if file_choice == "Imported" and self.imported_file_path:
-            self.recorder.transcribe_audio_from_file(self.imported_file_path, save_path, language, model, delete_after_transcription=False)
+            self.transcriber.transcribe_audio_from_file(self.imported_file_path, save_path, language, model, delete_after_transcription=False)
             self.imported_file_path = None
+            self.update_status("Status: Transcription completed", "green")
         elif file_choice == "Last Recorded" and self.last_recorded_file_path:
-            self.recorder.transcribe_audio_from_file(self.last_recorded_file_path, save_path, language, model, delete_after_transcription=delete_temp_audio)
+            self.transcriber.transcribe_audio_from_file(self.last_recorded_file_path, save_path, language, model, delete_after_transcription=delete_temp_audio)
             if delete_temp_audio and os.path.exists(self.last_recorded_file_path):
                 os.remove(self.last_recorded_file_path)
             self.last_recorded_file_path = None
+            self.update_status("Status: Transcription completed", "green")
         else:
             self.update_status("Status: No file selected for transcription", "red")
             return
-        self.update_status("Status: Transcription completed", "green")
         QtCore.QTimer.singleShot(2000, self.reset_status)
 
     def update_status(self, text, color):
@@ -186,13 +186,6 @@ class AppUI(QtWidgets.QMainWindow):
         super().resizeEvent(event)
 
     def closeEvent(self, event):
-        # Clear the Temp directory at shutdown
         shutil.rmtree("Temp")
         os.makedirs("Temp", exist_ok=True)
-        event.accept()
-
-if __name__ == "__main__":
-    app = QtWidgets.QApplication([])
-    window = AppUI()
-    window.show()
-    app.exec_()
+        super().closeEvent(event)
