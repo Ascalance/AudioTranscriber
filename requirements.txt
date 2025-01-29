@@ -1,7 +1,10 @@
-sounddevice
+torch
+torchvision
+torchaudio
 numpy
-wave
-whisper
-pydub
-pyinstaller
+openai-whisper
 PyQt5
+sounddevice
+pydub
+requests
+speechrecognition

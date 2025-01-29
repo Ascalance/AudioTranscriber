@@ -8,7 +8,7 @@ AudioTranscriber is an application for recording and transcribing audio files. I
 - Real-time transcription
 - Language detection
 - Speaker identification
-- Export transcriptions to various formats (txt, docx, pdf)
+- Export transcriptions to a .txt file
 
 ## Requirements
 - Python 3.6+
@@ -47,20 +47,6 @@ AudioTranscriber is an application for recording and transcribing audio files. I
     python main.py
     ```
 2. Follow the on-screen instructions to upload an audio file and start transcription.
-
-## Building for All Platforms
-- **Windows**:
-    ```sh
-    pyinstaller --onefile main.py
-    ```
-- **macOS**:
-    ```sh
-    pyinstaller --onefile main.py
-    ```
-- **Linux**:
-    ```sh
-    pyinstaller --onefile main.py
-    ```
 
 ## Contributing
 Contributions are welcome! Please fork the repository and create a pull request with your changes.
