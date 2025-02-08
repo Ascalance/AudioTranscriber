@@ -45,8 +45,8 @@ class Transcriber:
         if delete_after_transcription and file_path.startswith("temp"):
             os.remove(file_path)
             logging.info("Temporary audio file deleted.")
-        elif not file_path.startswith("temp"):
-            logging.info("Imported audio file not deleted.")
+        else:
+            logging.info("Audio file not deleted.")
 
     def get_unique_filepath(self, file_path):
         base, extension = os.path.splitext(file_path)

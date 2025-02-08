@@ -1,0 +1,1 @@
+python.exe .\audio_transcription_app\src\main.py
