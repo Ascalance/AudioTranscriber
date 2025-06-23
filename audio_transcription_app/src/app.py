@@ -87,6 +87,39 @@ class AppUI(QtWidgets.QMainWindow):
 
         self.switch_whisper_mode(self.whisper_mode_combo.currentText())
 
+        self.setGeometry(100, 100, 500, 400)
+
+        central_widget = QtWidgets.QWidget()
+        self.setCentralWidget(central_widget)
+        layout = QtWidgets.QVBoxLayout(central_widget)
+
+        self.recorder = AudioRecorder()
+
+        self.record_button = self.create_button("Start Recording", self.start_recording, layout)
+        self.stop_button = self.create_button("Stop Recording", self.stop_recording, layout, enabled=False)
+        self.import_button = self.create_button("Import Audio", self.import_audio, layout)
+        
+        self.clear_temp_button = self.create_button("Clear Temp Folder", self.clear_temp_folder, layout)
+
+        self.language_label = self.create_label("Choose Language:", layout)
+        self.language_combo = self.create_combo_box(["Detect Language Automatically", "French", "English", "Spanish", "German", "Chinese", "Japanese", "Russian", "Portuguese", "Italian", "Korean"], layout)
+
+        self.model_label = self.create_label("Choose Whisper Model:", layout)
+        self.model_combo = self.create_combo_box(["Turbo", "Tiny", "Base", "Small", "Medium", "Large"], layout, default="Turbo")
+
+        self.file_choice_label = self.create_label("Choose File to Transcribe:", layout)
+        self.file_choice_combo = self.create_combo_box(["Last Recorded", "Imported"], layout)
+
+        self.delete_temp_audio_checkbox = self.create_check_box("Temporary audio (will be deleted after transcription)", layout, checked=True)
+
+        self.transcription_button = self.create_button("Start Transcription", self.start_transcription, layout)
+
+        self.status_label = self.create_label("Status: Ready", layout, font_size=16, bold=True, color="blue", alignment=QtCore.Qt.AlignCenter)
+
+        self.size_label = self.create_label(f"Window Size: {self.width()} x {self.height()}", layout, alignment=QtCore.Qt.AlignCenter)
+
+        self.create_menu()
+
     def create_button(self, text, callback, layout, enabled=True):
         button = QtWidgets.QPushButton(text)
         button.setFont(QtGui.QFont("Arial", 12))
@@ -95,13 +128,14 @@ class AppUI(QtWidgets.QMainWindow):
         layout.addWidget(button)
         return button
 
-    def create_label(self, text, layout, font_size=12, bold=False, alignment=None):
+    def create_label(self, text, layout, font_size=12, bold=False, color="black", alignment=None):
         label = QtWidgets.QLabel(text)
         font = QtGui.QFont("Arial", font_size)
         if bold:
             font.setBold(True)
         label.setFont(font)
         # Remove color argument, let stylesheet handle it globally
+        label.setStyleSheet(f"color: {color};")
         if alignment:
             label.setAlignment(alignment)
         layout.addWidget(label)
@@ -131,7 +165,6 @@ class AppUI(QtWidgets.QMainWindow):
         self.theme_action.setCheckable(True)
         self.theme_action.triggered.connect(self.toggle_theme)
         theme_menu.addAction(self.theme_action)
-
         credits_menu = menubar.addMenu('Credits')
         author_action = QtWidgets.QAction('Author', self)
         author_action.triggered.connect(self.show_author_info)
@@ -248,7 +281,7 @@ class AppUI(QtWidgets.QMainWindow):
         self.transcription_thread.transcription_completed.connect(self.on_transcription_completed)
         self.transcription_thread.start()
 
-    def on_transcription_completed(self, status, color="blue"):
+    def on_transcription_completed(self, status, color):
         self.update_status(status, color)
         self.is_transcribing = False
         self.transcription_button.setEnabled(True)
