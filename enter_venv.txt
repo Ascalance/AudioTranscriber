@@ -1,0 +1,6 @@
+Use the following commands to entrer and modify the libraries in the venv :
+
+Windows:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+venv\Scripts\Activate.ps1
+Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser
