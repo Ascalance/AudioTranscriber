@@ -78,7 +78,7 @@ class AppUI(QtWidgets.QMainWindow):
         self.layout.addWidget(self.api_key_input)
         self.online_transcription_button = self.create_button("Start Transcription", self.start_online_transcription, self.layout)
 
-        self.status_label = self.create_label("Status: Ready", self.layout, font_size=16, bold=True, alignment=QtCore.Qt.AlignCenter)
+        self.status_label = self.create_label("Status: Ready", self.layout, font_size=16, bold=True, alignment=QtCore.Qt.AlignCenter, color="blue")
         self.size_label = self.create_label(f"Window Size: {self.width()} x {self.height()}", self.layout, alignment=QtCore.Qt.AlignCenter)
         self.create_menu()
 
@@ -248,7 +248,7 @@ class AppUI(QtWidgets.QMainWindow):
         self.transcription_thread.transcription_completed.connect(self.on_transcription_completed)
         self.transcription_thread.start()
 
-    def on_transcription_completed(self, status, color):
+    def on_transcription_completed(self, status, color="blue"):
         self.update_status(status, color)
         self.is_transcribing = False
         self.transcription_button.setEnabled(True)
