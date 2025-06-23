@@ -1,0 +1,32 @@
+QWidget { background-color: #1e1e1e; color: #d4d4d4; }
+QLineEdit, QComboBox, QTextEdit, QPlainTextEdit { background-color: #252526; color: #d4d4d4; border: 1px solid #3c3c3c; border-radius: 4px; }
+QPushButton {
+    background-color: #2d2d2d;
+    color: #d4d4d4;
+    border: 1px solid #3c3c3c;
+    border-radius: 4px;
+    padding: 4px 12px;
+}
+QPushButton:hover { background-color: #373737; }
+QPushButton:focus { outline: 2px solid #373737; }
+QComboBox {
+    background-color: #252526;
+    color: #d4d4d4;
+    border: 1px solid #3c3c3c;
+    border-radius: 4px;
+    padding: 2px 8px;
+}
+QComboBox QAbstractItemView {
+    background-color: #252526;
+    color: #d4d4d4;
+    selection-background-color: #373737;
+    selection-color: #ffffff;
+    border-radius: 4px;
+}
+QMenuBar { background-color: #2d2d2d; color: #d4d4d4; }
+QMenuBar::item:selected { background: #373737; border-radius: 4px; }
+QMenu { background-color: #2d2d2d; color: #d4d4d4; border-radius: 4px; }
+QMenu::item:selected { background-color: #2d2d2d; color: #fff; border-radius: 4px; }
+QCheckBox { background-color: transparent; color: #d4d4d4; }
+QLabel { color: #d4d4d4; }
+QScrollBar:vertical, QScrollBar:horizontal { background: #2d2d2d; }

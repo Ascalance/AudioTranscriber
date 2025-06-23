@@ -1,0 +1,28 @@
+Welcome!
+
+This app uses Whisper for local transcription, which requires ffmpeg to be installed on your system.
+Torch is NOT installed by default in the venv. Please install it manually according to your configuration.
+
+--- Python version required ---
+Python 3.13 is NOT supported. Please use Python 3.12 or lower.
+
+--- Install ffmpeg (click to expand) ---
+Windows:   winget install ffmpeg
+Linux:     sudo apt install ffmpeg
+MacOS:     brew install ffmpeg
+
+--- Install torch (click to expand) ---
+Find your command at https://pytorch.org/get-started/locally/ or try:
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+--- Enter and modify the venv (click to expand) ---
+Windows:
+  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+  venv\Scripts\Activate.ps1
+  Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser
+Linux:
+  source venv/bin/activate
+MacOS:
+  source venv/bin/activate
+
+After installing ffmpeg and torch, please reboot your computer before using the app.

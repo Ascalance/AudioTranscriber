@@ -1,0 +1,12 @@
+{
+  "ui": {
+    "theme": "dark",
+    "whisper_mode": "whisper offline",
+    "choose_language": "Detect Language Automatically",
+    "whisper_model": "Turbo",
+    "temp_audio": true,
+    "online_model": "whisper-1",
+    "online_temp_audio": true
+  },
+  "first_run": false
+}
