@@ -1,12 +1,8 @@
 torch
-torchvision
-torchaudio
 numpy
 openai
-transformers
 openai-whisper
 PyQt5
 sounddevice
 pydub
 requests
-speechrecognition

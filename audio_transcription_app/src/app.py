@@ -58,6 +58,34 @@ class TranscriptionThread(QtCore.QThread):
         self.transcriber.transcribe_audio_from_file(self.file_path, self.save_path, self.language, self.model, self.delete_after_transcription)
         self.transcription_completed.emit("Status: Transcription completed", "green")
 
+class OnlineTranscriptionThread(QtCore.QThread):
+    transcription_completed = QtCore.pyqtSignal(str, str)
+    def __init__(self, api_key, file_path, model, delete_temp, save_path):
+        super().__init__()
+        self.api_key = api_key
+        self.file_path = file_path
+        self.model = model
+        self.delete_temp = delete_temp
+        self.save_path = save_path
+    def run(self):
+        from online import OnlineTranscriber
+        try:
+            transcriber = OnlineTranscriber(api_key=self.api_key)
+            text = transcriber.transcribe_audio_from_file(self.file_path, model=self.model)
+            if text:
+                with open(self.save_path, 'w', encoding='utf-8') as f:
+                    f.write(text)
+                if self.delete_temp and self.file_path.startswith("Temp"):
+                    try:
+                        os.remove(self.file_path)
+                    except Exception:
+                        pass
+                self.transcription_completed.emit("Status: Online transcription completed", "green")
+            else:
+                self.transcription_completed.emit("Status: Error during online transcription", "red")
+        except Exception as e:
+            self.transcription_completed.emit(f"Status: {e}", "red")
+
 class AppUI(QtWidgets.QMainWindow):
     def __init__(self):
         self.settings = load_settings()
@@ -83,7 +111,7 @@ class AppUI(QtWidgets.QMainWindow):
 
     def initUI(self):
         self.setWindowTitle("AudioTranscriber")
-        self.setFixedSize(520, 673)
+        self.setFixedSize(530, 700)
         central_widget = QtWidgets.QWidget()
         self.setCentralWidget(central_widget)
         self.layout = QtWidgets.QVBoxLayout(central_widget)
@@ -102,6 +130,10 @@ class AppUI(QtWidgets.QMainWindow):
         self.file_choice_label = self.create_label("Choose File to Transcribe:")
         self.file_choice_combo = self.create_combo_box(["Last Recorded", "Imported"])
         self.delete_temp_audio_checkbox = self.create_check_box("Temporary audio (will be deleted after transcription)", checked=True)
+        self.layout.addWidget(self.delete_temp_audio_checkbox)
+        self.open_folder_checkbox_offline = self.create_check_box("Open transcription folder after completion", checked=self.settings["ui"].get("open_transcription_folder", True))
+        self.open_folder_checkbox_offline.stateChanged.connect(lambda _: self.on_open_folder_changed(self.open_folder_checkbox_offline.isChecked()))
+        self.layout.addWidget(self.open_folder_checkbox_offline)
         self.transcription_button = self.create_button("Start Transcription", self.start_offline_transcription)
         # Online widgets
         self.api_key_label = self.create_label("OpenAI API Key:")
@@ -111,6 +143,10 @@ class AppUI(QtWidgets.QMainWindow):
         self.online_model_label = self.create_label("Choose Online Model:")
         self.online_model_combo = self.create_combo_box(["whisper-1", "whisper-2"], default="whisper-1")
         self.online_temp_audio_checkbox = self.create_check_box("Temporary audio (will be deleted after online transcription)", checked=True)
+        self.layout.addWidget(self.online_temp_audio_checkbox)
+        self.open_folder_checkbox_online = self.create_check_box("Open transcription folder after completion", checked=self.settings["ui"].get("open_transcription_folder", True))
+        self.open_folder_checkbox_online.stateChanged.connect(lambda _: self.on_open_folder_changed(self.open_folder_checkbox_online.isChecked()))
+        self.layout.addWidget(self.open_folder_checkbox_online)
         self.online_transcription_button = self.create_button("Start Transcription", self.start_online_transcription)
         self.status_label = self.create_label("Status: Ready", font_size=16, bold=True, alignment=QtCore.Qt.AlignCenter)
         self.size_label = self.create_label(f"Window Size: {self.width()} x {self.height()}", alignment=QtCore.Qt.AlignCenter)
@@ -128,6 +164,8 @@ class AppUI(QtWidgets.QMainWindow):
         self.delete_temp_audio_checkbox.setChecked(self.settings["ui"].get("temp_audio", True))
         self.online_model_combo.setCurrentText(self.settings["ui"].get("online_model", "whisper-1"))
         self.online_temp_audio_checkbox.setChecked(self.settings["ui"].get("online_temp_audio", True))
+        self.open_folder_checkbox_offline.setChecked(self.settings["ui"].get("open_transcription_folder", True))
+        self.open_folder_checkbox_online.setChecked(self.settings["ui"].get("open_transcription_folder", True))
 
     def _get_mode_combo_default(self):
         return "Whisper Online" if self.settings["ui"].get("whisper_mode", "whisper offline").strip().lower() == "whisper online" else "Whisper Offline"
@@ -163,7 +201,6 @@ class AppUI(QtWidgets.QMainWindow):
     def create_check_box(self, text, checked=False):
         check_box = QtWidgets.QCheckBox(text)
         check_box.setChecked(checked)
-        self.layout.addWidget(check_box)
         return check_box
 
     def create_menu(self):
@@ -257,9 +294,9 @@ class AppUI(QtWidgets.QMainWindow):
     def switch_whisper_mode(self, mode):
         offline_widgets = [
             self.language_label, self.language_combo, self.model_label, self.model_combo,
-            self.file_choice_label, self.file_choice_combo, self.delete_temp_audio_checkbox, self.transcription_button
+            self.file_choice_label, self.file_choice_combo, self.delete_temp_audio_checkbox, self.open_folder_checkbox_offline, self.transcription_button
         ]
-        online_widgets = [self.api_key_label, self.api_key_input, self.online_model_label, self.online_model_combo, self.online_temp_audio_checkbox, self.online_transcription_button]
+        online_widgets = [self.api_key_label, self.api_key_input, self.online_model_label, self.online_model_combo, self.online_temp_audio_checkbox, self.open_folder_checkbox_online, self.online_transcription_button]
         if mode == "Whisper Online":
             for w in offline_widgets:
                 w.hide()
@@ -347,6 +384,7 @@ class AppUI(QtWidgets.QMainWindow):
             self.is_transcribing = False
             self.transcription_button.setEnabled(True)
             return
+        self.open_folder_after = self.open_folder_checkbox_offline.isChecked()
         self.transcription_thread = TranscriptionThread(self.transcriber, file_path, save_path, language, model, delete_after_transcription)
         self.transcription_thread.transcription_completed.connect(self.on_transcription_completed)
         self.transcription_thread.start()
@@ -355,10 +393,12 @@ class AppUI(QtWidgets.QMainWindow):
         self.update_status(status, color)
         self.is_transcribing = False
         self.transcription_button.setEnabled(True)
+        if getattr(self, 'open_folder_after', False):
+            folder = os.path.abspath(os.path.join("Records", "Transcription"))
+            QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(folder))
         QtCore.QTimer.singleShot(2000, lambda: self.update_status("Status: Ready", "blue"))
 
     def start_online_transcription(self):
-        from online import OnlineTranscriber
         api_key = self.api_key_input.text().strip()
         if not api_key:
             self.update_status("Status: Please enter your OpenAI API key", "red")
@@ -369,24 +409,21 @@ class AppUI(QtWidgets.QMainWindow):
             return
         model = self.online_model_combo.currentText()
         delete_temp = self.online_temp_audio_checkbox.isChecked()
+        save_path = os.path.join("Records", "Transcription", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_online.txt")
         self.update_status("Status: Online transcription in progress...", "purple")
-        try:
-            transcriber = OnlineTranscriber(api_key=api_key)
-            text = transcriber.transcribe_audio_from_file(file_path, model=model)
-            if text:
-                save_path = os.path.join("Records", "Transcription", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_online.txt")
-                with open(save_path, 'w', encoding='utf-8') as f:
-                    f.write(text)
-                if delete_temp and file_path.startswith("Temp"):
-                    try:
-                        os.remove(file_path)
-                    except Exception:
-                        pass
-                self.update_status("Status: Online transcription completed", "green")
-            else:
-                self.update_status("Status: Error during online transcription", "red")
-        except Exception as e:
-            self.update_status(f"Status: {e}", "red")
+        self.open_folder_after_online = self.open_folder_checkbox_online.isChecked()
+        self.online_thread = OnlineTranscriptionThread(api_key, file_path, model, delete_temp, save_path)
+        self.online_thread.transcription_completed.connect(self.on_online_transcription_completed)
+        self.online_transcription_button.setEnabled(False)
+        self.online_thread.start()
+
+    def on_online_transcription_completed(self, status, color):
+        self.update_status(status, color)
+        self.online_transcription_button.setEnabled(True)
+        if getattr(self, 'open_folder_after_online', False):
+            folder = os.path.abspath(os.path.join("Records", "Transcription"))
+            QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(folder))
+        QtCore.QTimer.singleShot(2000, lambda: self.update_status("Status: Ready", "blue"))
 
     def on_language_changed(self, language):
         self.settings["ui"]["choose_language"] = language
@@ -403,3 +440,8 @@ class AppUI(QtWidgets.QMainWindow):
     def on_online_temp_audio_changed(self, checked):
         self.settings["ui"]["online_temp_audio"] = checked
         save_settings(self.settings)
+    def on_open_folder_changed(self, checked):
+        self.settings["ui"]["open_transcription_folder"] = checked
+        save_settings(self.settings)
+        self.open_folder_checkbox_offline.setChecked(checked)
+        self.open_folder_checkbox_online.setChecked(checked)
