@@ -1,13 +1,17 @@
 {
   "ui": {
     "theme": "light",
-    "whisper_mode": "whisper offline",
+    "whisper_mode": "online",
     "choose_language": "Detect Language Automatically",
     "whisper_model": "Turbo",
     "temp_audio": true,
     "online_model": "whisper-1",
     "online_temp_audio": true,
-    "open_transcription_folder": true
+    "language": "Espa\u00f1ol (Europe)",
+    "open_transcription_folder": true,
+    "window_width": 530,
+    "window_height": 700,
+    "openai_api_key": ""
   },
   "first_run": false
 }

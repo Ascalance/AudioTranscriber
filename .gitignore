@@ -12,3 +12,6 @@ Logs/*
 
 # Exclude contents of venv/Lib/site-packages/torch because there is massive files in this labrary
 venv/Lib/site-packages/torch/*
+
+
+audio_transcription_app/Settings/user/settings.json
