@@ -1,6 +1,6 @@
 import openai
 import os
-import logging
+import logging  # Logging is configured globally in main.py
 
 class OnlineTranscriber:
     def __init__(self, api_key=None):

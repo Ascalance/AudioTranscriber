@@ -1,6 +1,6 @@
 import whisper
 import os
-import logging
+import logging  # Logging is configured globally in main.py
 import time
 import torch
 
@@ -13,7 +13,7 @@ class Transcriber:
     def transcribe_audio_from_file(self, file_path, save_path, language, model, delete_after_transcription):
         if not os.path.exists(file_path):
             logging.error("Audio file not found.")
-            return
+            raise FileNotFoundError(f"Audio file not found: {file_path}")
 
         model_mapping = {
             "Turbo": "turbo",
@@ -27,28 +27,36 @@ class Transcriber:
         transcription_start_time = time.time()
         try:
             whisper_model = whisper.load_model(model_mapping.get(model, model), device=self.device)
-            result = whisper_model.transcribe(file_path, language=language)
-        except ValueError as e:
+            if language is None:
+                result = whisper_model.transcribe(file_path)
+            else:
+                result = whisper_model.transcribe(file_path, language=language)
+        except Exception as e:
             logging.error(f"Transcription error: {e}")
-            return
+            raise RuntimeError(f"Transcription error: {e}")
         transcription_end_time = time.time()
         logging.info(f"Transcription completed in {transcription_end_time - transcription_start_time:.2f} seconds")
 
         if not result["text"].strip():
             logging.warning("No transcription generated.")
-            return
+            raise ValueError("No transcription generated.")
 
-        transcription_folder = os.path.join("Records", "Transcription")
-        os.makedirs(transcription_folder, exist_ok=True)
-        save_path = self.get_unique_filepath(os.path.join(transcription_folder, "transcription.txt"))
+        # Ensure the output directory exists
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
         with open(save_path, 'w', encoding='utf-8') as f:
             f.write(result["text"])
         logging.info(f"Transcription saved to {save_path}")
 
-        if delete_after_transcription and file_path.startswith("temp"):
-            os.remove(file_path)
-            logging.info("Temporary audio file deleted.")
+        # Robust temp file deletion: check for 'temp' folder in path (case-insensitive)
+        norm_path = os.path.normcase(os.path.normpath(file_path))
+        is_temp = os.path.sep + "temp" + os.path.sep in norm_path or norm_path.startswith("temp" + os.path.sep)
+        if delete_after_transcription and is_temp:
+            try:
+                os.remove(file_path)
+                logging.info("Temporary audio file deleted.")
+            except Exception as e:
+                logging.error(f"Failed to delete temporary audio file: {e}")
         else:
             logging.info("Audio file not deleted.")
 

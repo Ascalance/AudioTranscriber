@@ -1,4 +1,10 @@
 {
+  "label_export_format": "Exportformat:",
+  "combo_export_txt": "Text (.txt)",
+  "combo_export_pdf": "PDF (.pdf)",
+  "combo_export_docx": "Word (.docx)",
+  "combo_export_srt": "Untertitel (.srt)",
+  "combo_export_odt": "OpenDocument (.odt)",
   "app_title": "Audio Transkriptor",
   "menu_file": "Datei",
   "menu_edit": "Bearbeiten",

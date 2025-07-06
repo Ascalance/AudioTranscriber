@@ -1,4 +1,10 @@
 {
+  "label_export_format": "내보내기 형식:",
+  "combo_export_txt": "텍스트 (.txt)",
+  "combo_export_pdf": "PDF (.pdf)",
+  "combo_export_docx": "Word (.docx)",
+  "combo_export_srt": "자막 (.srt)",
+  "combo_export_odt": "OpenDocument (.odt)",
   "app_title": "오디오 트랜스크립터",
   "menu_file": "파일",
   "menu_edit": "편집",

@@ -1,5 +1,0 @@
-PyQt5
-openai
-whisper
-torch
-keyring

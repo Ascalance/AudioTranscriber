@@ -1,4 +1,10 @@
 {
+  "label_export_format": "エクスポート形式：",
+  "combo_export_txt": "テキスト (.txt)",
+  "combo_export_pdf": "PDF (.pdf)",
+  "combo_export_docx": "Word (.docx)",
+  "combo_export_srt": "字幕 (.srt)",
+  "combo_export_odt": "OpenDocument (.odt)",
   "app_title": "オーディオトランスクリプター",
   "menu_file": "ファイル",
   "menu_edit": "編集",

@@ -1,4 +1,10 @@
 {
+  "label_export_format": "Formato de exportação:",
+  "combo_export_txt": "Texto (.txt)",
+  "combo_export_pdf": "PDF (.pdf)",
+  "combo_export_docx": "Word (.docx)",
+  "combo_export_srt": "Legendas (.srt)",
+  "combo_export_odt": "OpenDocument (.odt)",
   "app_title": "Transcritor de Áudio",
   "menu_file": "Arquivo",
   "menu_edit": "Editar",

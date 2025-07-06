@@ -1,4 +1,10 @@
 {
+  "label_export_format": "导出格式：",
+  "combo_export_txt": "文本 (.txt)",
+  "combo_export_pdf": "PDF (.pdf)",
+  "combo_export_docx": "Word (.docx)",
+  "combo_export_srt": "字幕 (.srt)",
+  "combo_export_odt": "OpenDocument (.odt)",
   "app_title": "音频转录器",
   "menu_file": "文件",
   "menu_edit": "编辑",

@@ -1,4 +1,10 @@
 {
+  "label_export_format": "Формат экспорта:",
+  "combo_export_txt": "Текст (.txt)",
+  "combo_export_pdf": "PDF (.pdf)",
+  "combo_export_docx": "Word (.docx)",
+  "combo_export_srt": "Субтитры (.srt)",
+  "combo_export_odt": "OpenDocument (.odt)",
   "app_title": "Аудио Транскриптор",
   "menu_file": "Файл",
   "menu_edit": "Правка",

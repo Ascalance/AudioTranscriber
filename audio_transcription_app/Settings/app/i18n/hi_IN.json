@@ -1,4 +1,10 @@
 {
+  "label_export_format": "निर्यात प्रारूप:",
+  "combo_export_txt": "पाठ (.txt)",
+  "combo_export_pdf": "PDF (.pdf)",
+  "combo_export_docx": "Word (.docx)",
+  "combo_export_srt": "सबटाइटल (.srt)",
+  "combo_export_odt": "OpenDocument (.odt)",
   "app_title": "ऑडियो ट्रांसक्राइबर",
   "menu_file": "फ़ाइल",
   "menu_edit": "संपादित करें",

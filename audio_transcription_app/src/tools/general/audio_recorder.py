@@ -3,12 +3,7 @@ import wave
 import os
 import logging
 import time
-
-log_dir = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Logs')
-os.makedirs(log_dir, exist_ok=True)
-logging.basicConfig(filename=os.path.join(log_dir, 'log.txt'), level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-logging.info("\n--- Nouvelle session ---")
+# Logging is configured globally in main.py; do not reconfigure here.
 
 class AudioRecorder:
     def __init__(self):
